@@ -21,8 +21,8 @@ var toastQueue = [];
 var victory = false;
 
 var baseVisionRadius = 2;
-var baseStamina = 20;
-var baseStaminaRefeshAmount = 15;
+var baseStamina = 25;
+var baseStaminaRefeshAmount = 20;
 var baseZoom = 1.0;
 
 var isDebug = false;
@@ -560,10 +560,11 @@ class Block {
         victory = true;
       }
       if (this.itemType == "DEAD_PLAYER") {
-        toast("Map Updated!");
+        toast("Map Updated! +5 Stam. Don't ask how.");
         revealSquares(this.deadPlayer.revealedSquares);
         transferItems(player, this.deadPlayer);
         transferUpgrades(player, this.deadPlayer);
+        player.refreshStamina(5);
         this.setItem(null);
       }
       if (this.itemType == "STAMINA_ORB") {
@@ -832,13 +833,13 @@ function createBoard() {
   board[entranceRow][4].create("GRASS");
   board[entranceRow][4].setItem("STAMINA_ORB");
 
-  // Stamina orbs - 3 per 25x25 chunk
-  for (var col = 0; col <= cols - 25; col += 25) {
-    for (var row = 0; row <= rows - 25; row += 25) {
+  // Stamina orbs - 3 per 20x20 chunk
+  for (var col = 0; col <= cols - 20; col += 20) {
+    for (var row = 0; row <= rows - 20; row += 20) {
       var numPlaced = 0;
       while (numPlaced < 3) {
-        var randRow = randIntInclusive(row, row + 24);
-        var randCol = randIntInclusive(col, col + 24);
+        var randRow = randIntInclusive(row, row + 19);
+        var randCol = randIntInclusive(col, col + 19);
         if (board[randRow][randCol].isTraversable()) {
           board[randRow][randCol].setItem("STAMINA_ORB");
           numPlaced++;
@@ -847,7 +848,7 @@ function createBoard() {
     }
   }
 
-  // Stat Upgrades - 3 per 25x25 chunk
+  // Stat Upgrades - 2 per 25x25 chunk
   for (var col = 0; col <= cols - 25; col += 25) {
     for (var row = 0; row <= rows - 25; row += 25) {
       var numPlaced = 0;
@@ -1130,8 +1131,8 @@ window.addEventListener("keydown", function (event) {
     case "1":
       if (showStatUpgradeMenu) {
         showStatUpgradeMenu = false;
-        player.maxStamina += 10;
-        player.staminaRefreshAmount += 5;
+        player.maxStamina += 15;
+        player.staminaRefreshAmount += 15;
         toast("Max Stamina Upgraded!");
       }
       break;
